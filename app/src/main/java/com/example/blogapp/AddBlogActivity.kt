@@ -1,13 +1,16 @@
 package com.example.blogapp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.example.blogapp.Model.BlogItemModel
 import com.example.blogapp.Model.UserData
-import com.example.blogapp.databinding.ActivityAddArticleBinding
+import com.example.blogapp.databinding.ActivityAddBlogBinding
 import com.github.ybq.android.spinkit.sprite.Sprite
 import com.github.ybq.android.spinkit.style.Circle
 import com.google.firebase.auth.FirebaseAuth
@@ -20,9 +23,9 @@ import com.google.firebase.database.ValueEventListener
 import java.text.SimpleDateFormat
 import java.util.Date
 
-class AddArticleActivity : AppCompatActivity() {
-    private val binding: ActivityAddArticleBinding by lazy {
-        ActivityAddArticleBinding.inflate(layoutInflater)
+class AddBlogActivity : AppCompatActivity() {
+    val binding: ActivityAddBlogBinding by lazy {
+        ActivityAddBlogBinding.inflate(layoutInflater)
     }
 
     private val databaseReference: DatabaseReference =
@@ -30,17 +33,25 @@ class AddArticleActivity : AppCompatActivity() {
     private val userReference: DatabaseReference =
         FirebaseDatabase.getInstance().getReference("users")
 
-    /*if code not working uncomment this lines
-    private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance("https://blog-app-147b1-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("blogs")
-    private val userReference: DatabaseReference = FirebaseDatabase.getInstance("https://blog-app-147b1-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("users")*/
+    lateinit var blogItem: BlogItemModel
     private val auth = FirebaseAuth.getInstance()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        loader()
         binding.imageButton.setOnClickListener {
             finish()
         }
+
         binding.addBlogButton.setOnClickListener {
 
             val title = binding.blogTitle.editText?.text.toString().trim()
@@ -53,11 +64,9 @@ class AddArticleActivity : AppCompatActivity() {
 
             // get current user
             val user: FirebaseUser? = auth.currentUser
-
-            loader()
             binding.loaderAddBlog.visibility = View.VISIBLE
-            binding.addBlogButton.text = "Loading...."
             binding.addBlogButton.visibility = View.INVISIBLE
+
             if (user != null) {
                 val userId = user.uid
                 val userName = user.displayName ?: "Anonymous"
@@ -74,7 +83,7 @@ class AddArticleActivity : AppCompatActivity() {
                                 val currentDate = SimpleDateFormat("yyyy-MM-dd").format(Date())
 
                                 // create a blogItemModel
-                                val blogItem = BlogItemModel(
+                                blogItem = BlogItemModel(
                                     title,
                                     userNameFromDB,
                                     currentDate,
@@ -86,7 +95,6 @@ class AddArticleActivity : AppCompatActivity() {
                                 // generate a unique key for the blog post
                                 val key = databaseReference.push().key
                                 if (key != null) {
-
                                     blogItem.postId = key
                                     val blogReference = databaseReference.child(key)
                                     blogReference.setValue(blogItem).addOnCompleteListener {
@@ -95,7 +103,7 @@ class AddArticleActivity : AppCompatActivity() {
                                             finish()
                                         } else {
                                             Toast.makeText(
-                                                this@AddArticleActivity,
+                                                this@AddBlogActivity,
                                                 "Failed to add blog",
                                                 Toast.LENGTH_SHORT
                                             ).show()
@@ -113,10 +121,9 @@ class AddArticleActivity : AppCompatActivity() {
         }
     }
 
-    fun loader() {
+    private fun loader() {
         val progressBar = binding.loaderAddBlog as ProgressBar
         val circle: Sprite = Circle()
         progressBar.indeterminateDrawable = circle
     }
-
 }

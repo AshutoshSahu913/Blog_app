@@ -4,8 +4,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
 import com.bumptech.glide.Glide
 import com.example.blogapp.Model.BlogItemModel
+import com.example.blogapp.R
 import com.example.blogapp.databinding.ArticleItemBinding
 import java.util.ArrayList
 
@@ -48,9 +50,9 @@ class ArticleAdapter(
     inner class BlogViewHolder(private val binding: ArticleItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(blogItem: BlogItemModel) {
             binding.heading.text = blogItem.heading
-            Glide.with(binding.profile.context)
-                .load(blogItem.profileImage)
-                .into(binding.profile)
+            binding.profile.load(blogItem.profileImage){
+                placeholder(R.drawable.dog)
+            }
             binding.userName.text = blogItem.userName
             binding.date.text = blogItem.date
             binding.post.text = blogItem.post
@@ -68,7 +70,6 @@ class ArticleAdapter(
             binding.deleteButton.setOnClickListener {
                 itemClickListener.onDeleteClick(blogItem)
             }
-
         }
     }
 }

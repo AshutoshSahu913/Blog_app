@@ -1,10 +1,14 @@
 package com.example.blogapp
 
+import android.app.Dialog
 import android.content.Intent
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.WindowManager
+import android.widget.ImageView
 import android.widget.Toast
-import com.bumptech.glide.Glide
+import coil.load
 import com.example.blogapp.databinding.ActivityProfileBinding
 import com.example.blogapp.register.WelcomeActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -28,19 +32,18 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(binding.root)
         // to go add article page
         binding.addNewBlogButton.setOnClickListener {
-            startActivity(Intent(this, AddArticleActivity::class.java))
+            startActivity(Intent(this, AddBlogActivity::class.java))
         }
         // to go to Your Article activity
         binding.articlesButton.setOnClickListener {
-            startActivity(Intent(this,ArticleActivity::class.java ))
+            startActivity(Intent(this, ArticleActivity::class.java))
         }
 
         // to logOut
         binding.logOutButton.setOnClickListener {
             auth.signOut()
-
             // navigate
-            startActivity(Intent(this,WelcomeActivity::class.java))
+            startActivity(Intent(this, WelcomeActivity::class.java))
             finish()
         }
 
@@ -48,11 +51,39 @@ class ProfileActivity : AppCompatActivity() {
         // Initialize Firebase
         auth = FirebaseAuth.getInstance()
         databaseReference = FirebaseDatabase.getInstance().reference.child("users")
-        /*if code not working uncomment this line
-                databaseReference = FirebaseDatabase.getInstance("https://blog-app-147b1-default-rtdb.asia-southeast1.firebasedatabase.app").reference.child("users")*/
         val userId = auth.currentUser?.uid
         if (userId != null) {
             loadUserProfileData(userId)
+        }
+
+
+        //open dialog for profile
+        binding.userProfile.setOnLongClickListener {
+            val dialog = Dialog(this)
+            dialog.setContentView(R.layout.dialog_image)
+            //set transparent background of dialog
+            //set profile image in the dialog box show in full length
+            val image = dialog.findViewById<ImageView>(R.id.image)
+            val imageObject = binding.userProfile.drawable
+            image.setImageDrawable(imageObject)
+
+            dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+            // set dialog parameter height and width
+            val lp = WindowManager.LayoutParams()
+            lp.width = WindowManager.LayoutParams.WRAP_CONTENT
+            lp.height = WindowManager.LayoutParams.MATCH_PARENT
+
+            //blur background of dialog
+            lp.flags = WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                lp.blurBehindRadius = 10
+            }
+
+            //set all attributes to dialog
+            dialog.window?.attributes = lp
+            dialog.show()
+            true
         }
     }
 
@@ -64,14 +95,18 @@ class ProfileActivity : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val profileImageUrl = snapshot.getValue(String::class.java)
                 if (profileImageUrl != null) {
-                    Glide.with(this@ProfileActivity)
-                        .load(profileImageUrl)
-                        .into(binding.userProfile)
+                    binding.userProfile.load(profileImageUrl) {
+                        placeholder(R.drawable.dog)
+                    }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ProfileActivity, "Failed to load user image 🙃", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@ProfileActivity,
+                    "Failed to load user image 🙃",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         })
 
@@ -80,17 +115,14 @@ class ProfileActivity : AppCompatActivity() {
         userReference.child("name").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val userName = snapshot.getValue(String::class.java)
-
                 if (userName != null) {
                     binding.userName.text = userName
                 }
-
             }
 
             override fun onCancelled(error: DatabaseError) {
 
             }
         })
-
     }
 }

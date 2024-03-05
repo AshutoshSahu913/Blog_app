@@ -20,12 +20,10 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 
-class BlogAdapter(private val items: MutableList<BlogItemModel>) :
+class BlogAdapter(var items: MutableList<BlogItemModel>) :
     RecyclerView.Adapter<BlogAdapter.BLogViewHolder>() {
 
     private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
-   /* if not working uncomment this line
-       // FirebaseDatabase.getInstance("https://blog-app-147b1-default-rtdb.asia-southeast1.firebasedatabase.app").reference*/
     private val currentUser = FirebaseAuth.getInstance().currentUser
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BLogViewHolder {
@@ -52,18 +50,17 @@ class BlogAdapter(private val items: MutableList<BlogItemModel>) :
             val context = binding.root.context
             binding.heading.text = blogItemModel.heading
             binding.profile.load(blogItemModel.profileImage) {
-                placeholder(R.drawable.logo)
+                placeholder(R.drawable.dog)
             }
-//
             binding.userName.text = blogItemModel.userName
             binding.date.text = blogItemModel.date
             binding.post.text = blogItemModel.post
             binding.likeCount.text = blogItemModel.likeCount.toString()
-
             // set on click listener
             binding.root.setOnClickListener {
                 val context = binding.root.context
                 val intent = Intent(context, ReadMoreActivity::class.java)
+
                 intent.putExtra("blogItem", blogItemModel)
                 context.startActivity(intent)
             }
@@ -228,11 +225,9 @@ class BlogAdapter(private val items: MutableList<BlogItemModel>) :
                         binding.postSaveButton.setImageResource(R.drawable.unsave_articles_red)
                     } else {
                         // the blog is not saved , so save it
-
                         userReference.child("saveBlogPosts").child(postId).setValue(true)
                             .addOnSuccessListener {
                                 // update ui
-
                                 val clickedBlogItem = items.find { it.postId == postId }
                                 clickedBlogItem?.isSaved = true
                                 notifyDataSetChanged()
@@ -255,6 +250,7 @@ class BlogAdapter(private val items: MutableList<BlogItemModel>) :
                 }
             })
     }
+
 
     fun updateData(savedBlogsArticles: List<BlogItemModel>) {
         items.clear()

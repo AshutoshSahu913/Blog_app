@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
     android:elevation="5dp"
     app:cardCornerRadius="9dp"
     app:cardUseCompatPadding="true">
@@ -41,6 +40,7 @@
                 android:id="@+id/profile"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:scaleType="centerCrop"
                 android:src="@drawable/profile1" />
         </androidx.cardview.widget.CardView>
 
@@ -88,6 +88,8 @@
             android:fontFamily="@font/montserrat_light"
             android:letterSpacing="0.03"
             android:lineHeight="22sp"
+
+            android:textStyle="bold"
             android:maxLines="4"
             android:text="I recently read a helpful article on Hashnode by Simon Egersand titled Write Git Commit Messages Your Colleagues Will Love,and it inspired me to dive a little deeper into understanding what makes a Git commit good or bad. "
             android:textColor="@color/black"

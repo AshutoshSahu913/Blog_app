@@ -21,6 +21,7 @@ class EditBlogActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
         binding.imageButton.setOnClickListener {
             finish()
         }
@@ -29,27 +30,23 @@ class EditBlogActivity : AppCompatActivity() {
         binding.blogTitle.editText?.setText(blogItemModel?.heading)
         binding.blogDescription.editText?.setText(blogItemModel?.post)
 
-        binding.SaveBlogButton.setOnClickListener {
-
-
+        binding.EditBlogButton.setOnClickListener {
+            loader()
+            binding.loaderEditBlog.visibility = View.VISIBLE
+            binding.EditBlogButton.visibility = View.INVISIBLE
             val updatedTitle = binding.blogTitle.editText?.text.toString().trim()
             val updatedDescription = binding.blogDescription.editText?.text.toString().trim()
 
             if (updatedTitle.isEmpty() || updatedDescription.isEmpty()) {
                 Toast.makeText(this, "Please Fill All The Details", Toast.LENGTH_SHORT).show()
             } else {
-                loader()
-                binding.loaderEditBlog.visibility = View.VISIBLE
-                binding.SaveBlogButton.text = "Saving..."
                 blogItemModel?.heading = updatedTitle
                 blogItemModel?.post = updatedDescription
-
                 if (blogItemModel != null) {
                     updateDataInFirebase(blogItemModel)
                 }
             }
         }
-
     }
 
     private fun loader() {
@@ -60,15 +57,14 @@ class EditBlogActivity : AppCompatActivity() {
     }
 
     private fun updateDataInFirebase(blogItemModel: BlogItemModel) {
-        val databaseReference = FirebaseDatabase.getInstance().getReference("blogs")/*if code not working uncomment this line
-        val databaseReference = FirebaseDatabase.getInstance("https://blog-app-147b1-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("blogs")*/
+        val databaseReference = FirebaseDatabase.getInstance().getReference("blogs")
         val postId = blogItemModel.postId
         databaseReference.child(postId).setValue(blogItemModel).addOnSuccessListener {
-                binding.loaderEditBlog.visibility = View.GONE
-                Toast.makeText(this, "Blog Updated Successful", Toast.LENGTH_SHORT).show()
-                finish()
-            }.addOnFailureListener {
-                Toast.makeText(this, "Blog Updated Un-Successful", Toast.LENGTH_SHORT).show()
-            }
+            binding.loaderEditBlog.visibility = View.GONE
+            Toast.makeText(this, "Blog Updated Successful", Toast.LENGTH_SHORT).show()
+            finish()
+        }.addOnFailureListener {
+            Toast.makeText(this, "Blog Updated Un-Successful", Toast.LENGTH_SHORT).show()
+        }
     }
 }

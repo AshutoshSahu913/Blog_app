@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_white"
+
     tools:context=".MainActivity">
 
     <ImageView
@@ -27,7 +27,7 @@
         android:layout_marginTop="18dp"
         android:fontFamily="@font/montserrat_semibold"
         android:text="New Feed"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -59,7 +59,9 @@
         app:layout_constraintBottom_toBottomOf="@+id/textView7"
         app:layout_constraintEnd_toStartOf="@+id/cardView2"
         app:layout_constraintTop_toTopOf="@+id/textView7"
-        app:srcCompat="@drawable/unsave_articles_black" />
+        app:srcCompat="@drawable/unsave_articles_black"
+        app:tint="@color/white" />
+
 
     <EditText
         android:id="@+id/search_blog"
@@ -68,14 +70,14 @@
         android:layout_margin="10dp"
         android:background="@drawable/serch_shape"
         android:drawableStart="@drawable/search"
+        android:drawablePadding="10dp"
+        android:backgroundTint="@color/black"
         android:drawableTint="@color/appColor"
         android:ems="10"
-        android:hint="Search here..."
-
+        android:hint="Search here ...."
         android:inputType="text"
         android:layoutAnimation="@anim/layout_animation"
         android:paddingStart="15dp"
-        android:drawablePadding="10dp"
         android:textColor="@color/appColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -91,7 +93,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/search_blog"
-
         tools:listitem="@layout/blog_item" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -127,10 +128,10 @@
 
     <ImageView
         android:id="@+id/emptyImg"
-        android:visibility="gone"
         android:layout_width="200dp"
         android:layout_height="200dp"
         android:src="@drawable/dog"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

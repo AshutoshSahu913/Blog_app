@@ -130,10 +130,8 @@ class SignInAndRegistrationActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) imageUri =
-            data.data
-//        Glide.with(this).load(imageUri).apply(RequestOptions.circleCropTransform())
-//            .into(binding.registerUserImage)
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null)
+            imageUri = data.data
 
         binding.registerUserImage.load(imageUri) {
             placeholder(R.drawable.image)
